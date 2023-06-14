@@ -13,15 +13,15 @@ import AttributeType from './AttributeType.js';
 import Webhook from './Webhook.js';
 
 export default class WebhooksListResponse {
-  'data': Array<Webhook>;
+  'webhooks': Array<Webhook>;
   'total': number;
 
   static readonly discriminator?: string = undefined;
 
   static readonly attributeTypeMap: Array<AttributeType> = [
     {
-      name: 'data',
-      baseName: 'data',
+      name: 'webhooks',
+      baseName: 'webhooks',
       type: 'Array<Webhook>',
       format: '',
     },

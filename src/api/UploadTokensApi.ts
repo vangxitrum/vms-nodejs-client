@@ -1,14 +1,3 @@
-/**
- * @api.video/nodejs-client
- * api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
- *
- * The version of the OpenAPI document: 1
- *
- *
- * NOTE: This class is auto generated.
- * Do not edit the class manually.
- */
-
 import { URLSearchParams } from 'url';
 import ObjectSerializer from '../ObjectSerializer';
 import HttpClient, { QueryOptions } from '../HttpClient';
@@ -28,7 +17,7 @@ export default class UploadTokensApi {
   }
 
   /**
-   * Use this endpoint to generate an upload token. You can use this token to authenticate video uploads while keeping your API key safe. Tutorials using [delegated upload](https://api.video/blog/endpoints/delegated-upload).
+   * Use this endpoint to generate an upload token. You can use this token to authenticate video uploads while keeping your API key safe.
    * Generate an upload token
    * @param tokenCreationPayload
    */
@@ -73,7 +62,7 @@ export default class UploadTokensApi {
           if (rs.status === "success") {
             return ObjectSerializer.deserialize(
               ObjectSerializer.parse(
-                rs.data,
+               JSON.stringify(rs.data),
               ),
               'UploadToken',
               ''
@@ -100,7 +89,6 @@ export default class UploadTokensApi {
     }
     // Path Params
     const localVarPath = 'api/upload_tokens/{uploadToken}'
-      .substring(1)
       .replace(
         '{' + 'uploadToken' + '}',
         encodeURIComponent(String(uploadToken))
@@ -123,7 +111,7 @@ export default class UploadTokensApi {
           if (rs.status === "success") {
             return ObjectSerializer.deserialize(
               ObjectSerializer.parse(
-                rs.data,
+                JSON.stringify(rs.data),
               ),
               'UploadToken',
               ''
@@ -150,7 +138,6 @@ export default class UploadTokensApi {
     }
     // Path Params
     const localVarPath = 'api/upload_tokens/{uploadToken}'
-      .substring(1)
       .replace(
         '{' + 'uploadToken' + '}',
         encodeURIComponent(String(uploadToken))
@@ -176,7 +163,7 @@ export default class UploadTokensApi {
   }
 
   /**
-   * A delegated token is used to allow secure uploads without exposing your API key. Use this endpoint to retrieve a list of all currently active delegated tokens. Tutorials using [delegated upload](https://api.video/blog/endpoints/delegated-upload).
+   * A delegated token is used to allow secure uploads without exposing your API key. Use this endpoint to retrieve a list of all currently active delegated tokens.
    * List all active upload tokens.
    * @param {Object} searchParams
    * @param { &#39;createdAt&#39; | &#39;ttl&#39; } searchParams.sortBy Allowed: createdAt, ttl. You can use these to sort by when a token was created, or how much longer the token will be active (ttl - time to live). Date and time is presented in ISO-8601 format.
@@ -198,7 +185,7 @@ export default class UploadTokensApi {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     // Path Params
-    const localVarPath = 'api/upload_tokens'.substring(1);
+    const localVarPath = 'api/upload_tokens';
 
     // Query Params
     const urlSearchParams = new URLSearchParams();
@@ -245,13 +232,12 @@ export default class UploadTokensApi {
             'HttpResponse',
             ''
           ) as HttpResponse
-
           if (rs.status === "success") {
             return ObjectSerializer.deserialize(
               ObjectSerializer.parse(
-                rs.data,
+                JSON.stringify(rs.data),
               ),
-              'UploadToken',
+              'TokenListResponse',
               ''
             ) as TokenListResponse
           }

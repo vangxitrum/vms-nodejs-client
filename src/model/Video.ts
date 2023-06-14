@@ -36,7 +36,13 @@ export default class Video {
    * Metadata you can use to categorise and filter videos. Metadata is a list of dictionaries, where each dictionary represents a key value pair for categorising a video. [Dynamic Metadata](https://api.video/blog/endpoints/dynamic-metadata) allows you to define a key that allows any value pair.
    */
   'metadata'?: Array<Metadata>;
+  /**
+   * The source object contains the original MP4 file uploaded to api.video. The source object contains the following properties: uri, type.
+   */
   'source'?: VideoSource;
+  /**
+   * The assets object contains the HLS and MP4 playback URLs for the video. The assets object contains the following properties: iframe, player, hls, thumbnail, mp4.
+   */
   'assets'?: VideoAssets;
   /**
    * Defines if the content is publicly reachable or if a unique token is needed for each play session. Default is true. Tutorials on [private videos](https://api.video/blog/endpoints/private-videos).

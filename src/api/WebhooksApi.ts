@@ -1,14 +1,3 @@
-/**
- * @api.video/nodejs-client
- * api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
- *
- * The version of the OpenAPI document: 1
- *
- *
- * NOTE: This class is auto generated.
- * Do not edit the class manually.
- */
-
 import { URLSearchParams } from 'url';
 import ObjectSerializer from '../ObjectSerializer';
 import HttpClient, { QueryOptions } from '../HttpClient';
@@ -28,7 +17,7 @@ export default class WebhooksApi {
   }
 
   /**
-   * Webhooks can push notifications to your server, rather than polling api.video for changes. We currently offer four events:  * ```video.encoding.quality.completed``` Occurs when a new video is uploaded into your account, it will be encoded into several different HLS and mp4 qualities. When each version is encoded, your webhook will get a notification.  It will look like ```{ \"type\": \"video.encoding.quality.completed\", \"emittedAt\": \"2021-01-29T16:46:25.217+01:00\", \"videoId\": \"viXXXXXXXX\", \"encoding\": \"hls\", \"quality\": \"720p\"} ```. This request says that the 720p HLS encoding was completed. * ```live-stream.broadcast.started```  When a live stream begins broadcasting, the broadcasting parameter changes from false to true, and this webhook fires. * ```live-stream.broadcast.ended```  This event fires when the live stream has finished broadcasting, and the broadcasting parameter flips from false to true. * ```video.source.recorded```  This event occurs when a live stream is recorded and submitted for encoding.
+   * Webhooks can push notifications to your server, rather than polling VMS for changes. We currently offer four events:  * ```video.encoding.quality.completed``` Occurs when a new video is uploaded into your account, it will be encoded into several different HLS and mp4 qualities. When each version is encoded, your webhook will get a notification.
    * Create Webhook
    * @param webhooksCreationPayload
    */
@@ -46,7 +35,7 @@ export default class WebhooksApi {
       );
     }
     // Path Params
-    const localVarPath = 'api/webhooks'.substring(1);
+    const localVarPath = 'api/webhooks';
 
     // Body Params
     const contentType = ObjectSerializer.getPreferredMediaType([
@@ -76,11 +65,11 @@ export default class WebhooksApi {
             'HttpResponse',
             ''
           ) as HttpResponse
-
+            
           if (rs.status === "success") {
             return ObjectSerializer.deserialize(
               ObjectSerializer.parse(
-                rs.data,
+                JSON.stringify(rs.data),
               ),
               'Webhook',
               ''
@@ -106,8 +95,7 @@ export default class WebhooksApi {
       );
     }
     // Path Params
-    const localVarPath = '/webhooks/{webhookId}'
-      .substring(1)
+    const localVarPath = 'api/webhooks/{webhookId}'
       .replace('{' + 'webhookId' + '}', encodeURIComponent(String(webhookId)));
 
     queryParams.method = 'GET';
@@ -115,14 +103,27 @@ export default class WebhooksApi {
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
+        (response) => {
+            let rs = ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
             ),
-            'Webhook',
+            'HttpResponse',
             ''
-          ) as Webhook
+          ) as HttpResponse
+
+            if (rs.status === "success" ){
+              return ObjectSerializer.deserialize(
+                ObjectSerializer.parse(
+                  JSON.stringify(rs.data),
+                ),
+                'Webhook',
+                ''
+              ) as Webhook
+            }
+
+            return undefined
+          }
       );
   }
 
@@ -141,7 +142,6 @@ export default class WebhooksApi {
     }
     // Path Params
     const localVarPath = 'api/webhooks/{webhookId}'
-      .substring(1)
       .replace('{' + 'webhookId' + '}', encodeURIComponent(String(webhookId)));
 
     queryParams.method = 'DELETE';
@@ -173,8 +173,8 @@ You can filter what the webhook list that the API returns using the parameters d
    * @param { string } searchParams.events The webhook event that you wish to filter on.
    * @param { string } searchParams.sortBy The webhook event that you wish to filter on.
    * @param { string } searchParams.sortOrder The webhook event that you wish to filter on.
-   * @param { number } searchParams.limit Choose the number of search results to return per page. Minimum value: 1
-   * @param { number } searchParams.offset Results per page. Allowed values 1-100, default is 25.
+   * @param { number } searchParams.limit The number of item you want to get. Minimum value: 1
+   * @param { number } searchParams.offset The number of item you want to skip. Allowed values 1-100, default is 25.
    */
   public async list({
     events,
@@ -188,11 +188,11 @@ You can filter what the webhook list that the API returns using the parameters d
     sortOrder?: string;
     limit?: number;
     offset?: number;
-  } = {}): Promise<WebhooksListResponse> {
+  } = {}): Promise<WebhooksListResponse | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     // Path Params
-    const localVarPath = 'api/webhooks'.substring(1);
+    const localVarPath = 'api/webhooks';
 
     // Query Params
     const urlSearchParams = new URLSearchParams();
@@ -200,13 +200,13 @@ You can filter what the webhook list that the API returns using the parameters d
     if (sortBy !== undefined) {
       urlSearchParams.append(
         'sort_by',
-        ObjectSerializer.serialize(events, 'string', '')
+        ObjectSerializer.serialize(sortBy, 'string', '')
       );
     }
     if (sortOrder !== undefined) {
       urlSearchParams.append(
         'order',
-        ObjectSerializer.serialize(events, 'string', '')
+        ObjectSerializer.serialize(sortOrder, 'string', '')
       );
     }
     if (events !== undefined) {
@@ -235,14 +235,27 @@ You can filter what the webhook list that the API returns using the parameters d
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
+        (response) =>{
+          let rs = ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
             ),
-            'WebhooksListResponse',
+            'HttpResponse',
             ''
-          ) as WebhooksListResponse
+          ) as HttpResponse
+
+          if (rs.status === "success") {
+            return ObjectSerializer.deserialize(
+              ObjectSerializer.parse(
+                JSON.stringify(rs.data),
+              ),
+              'WebhooksListResponse',
+              ''
+            ) as WebhooksListResponse
+          }
+
+          return undefined
+        }
       );
   }
 }

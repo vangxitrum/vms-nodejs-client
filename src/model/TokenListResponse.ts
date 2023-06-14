@@ -2,15 +2,15 @@ import AttributeType from './AttributeType.js';
 import UploadToken from './UploadToken.js';
 
 export default class TokenListResponse {
-  'data': Array<UploadToken>;
+  'upload_tokens': Array<UploadToken>;
   'total': number;
 
   static readonly discriminator?: string = undefined;
 
   static readonly attributeTypeMap: Array<AttributeType> = [
     {
-      name: 'data',
-      baseName: 'data',
+      name: 'upload_tokens',
+      baseName: 'upload_tokens',
       type: 'Array<UploadToken>',
       format: '',
     },

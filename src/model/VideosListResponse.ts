@@ -2,15 +2,15 @@ import AttributeType from './AttributeType.js';
 import Video from './Video.js';
 
 export default class VideosListResponse {
-  'data': Array<Video>;
+  'videos': Array<Video>;
   'total': number;
 
   static readonly discriminator?: string = undefined;
 
   static readonly attributeTypeMap: Array<AttributeType> = [
     {
-      name: 'data',
-      baseName: 'data',
+      name: 'videos',
+      baseName: 'videos',
       type: 'Array<Video>',
       format: '',
     },

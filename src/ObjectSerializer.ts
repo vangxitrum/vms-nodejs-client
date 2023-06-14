@@ -224,27 +224,5 @@ export default class ObjectSerializer {
    */
   public static parse(rawData: string): any {
     return JSON.parse(rawData);
-  //   if (mediaType === undefined) { 
-  //     // HTTP DELETE response.
-  //     if (rawData === '') {
-  //       return rawData;
-  //     }
-
-  //     throw new Error('Cannot parse content. No Content-Type defined.');
-  //   }
-
-  //   if (
-  //     mediaType === 'application/json' ||
-  //     mediaType.indexOf('application/vnd.api.video+json;version=') === 0
-  //   ) {
-  //     return JSON.parse(rawData);
-  //   }
-
-  //   throw new Error(
-  //     'The mediaType ' +
-  //       mediaType +
-  //       ' is not supported by ObjectSerializer.parse.'
-  //   );
-  // }
   }
 }

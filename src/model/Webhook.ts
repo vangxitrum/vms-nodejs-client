@@ -4,7 +4,7 @@ export default class Webhook {
   /**
    * Unique identifier of the webhook
    */
-  'webhook_id'?: string;
+  'id'?: string;
   /**
    * When an webhook was created, presented in ISO-8601 format.
    */
@@ -22,8 +22,8 @@ export default class Webhook {
 
   static readonly attributeTypeMap: Array<AttributeType> = [
     {
-      name: 'webhook_id',
-      baseName: 'webhook_id',
+      name: 'id',
+      baseName: 'id',
       type: 'string',
       format: '',
     },
@@ -38,6 +38,12 @@ export default class Webhook {
       baseName: 'events',
       type: 'Array<string>',
       format: '',
+    },
+    {
+      name: 'updated_at',
+      baseName: 'updated_at',
+      type: 'Date',
+      format: 'date-time',
     },
     {
       name: 'url',

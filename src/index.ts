@@ -4,7 +4,7 @@ import UploadTokensApi from './api/UploadTokensApi';
 import VideosApi from './api/VideosApi';
 import WebhooksApi from './api/WebhooksApi';
 
-const PRODUCTION_BASE_URI = 'https://ws.api.video';
+const PRODUCTION_BASE_URI = 'http://144.126.243.124:8123/';
 const DEFAULT_CHUNK_SIZE = 50 * 1024 * 1024;
 const MIN_CHUNK_SIZE = 5 * 1024 * 1024;
 const MAX_CHUNK_SIZE = 128 * 1024 * 1024;
@@ -63,6 +63,14 @@ class ApiVideoClient {
    */
   public get videos(): VideosApi {
     return this._videos;
+  }
+
+  /**
+   * Get an UploadTokensApi instance
+   * @return UploadTokensApi
+   */
+  public get uploadTokens(): UploadTokensApi {
+    return this._uploadTokens;
   }
 
   /**

@@ -11,6 +11,7 @@ import VideoUpdatePayload from '../model/VideoUpdatePayload';
 import VideosListResponse from '../model/VideosListResponse';
 import { Readable } from 'stream';
 import { readableToBuffer } from '../HttpClient';
+import { error } from 'console';
 
 export default class VideosApi {
   private httpClient: HttpClient;
@@ -44,10 +45,11 @@ export default class VideosApi {
     queryParams.method = 'POST';
 
     const formData = new FormData();
-    formData.append('title', videoData.title);
-    formData.append('description', videoData.description);
-    if (videoData.metadata !== undefined) {
-      formData.append('metadata', JSON.stringify(videoData.metadata));
+    if (videoData.title === undefined) {
+      formData.append('title', videoData.title);
+    }
+    if (videoData.description !== undefined) {
+      formData.append('description', videoData.description);
     }
     if (videoData.tags !== undefined) {
       formData.append('tags', JSON.stringify(videoData.tags));
@@ -134,8 +136,13 @@ export default class VideosApi {
     queryParams.method = 'POST';
 
     const formData = new FormData();
-    formData.append('title', videoData.title);
-    formData.append('description', videoData.description);
+    
+    if (videoData.title === undefined) {
+      formData.append('title', videoData.title);
+    }
+    if (videoData.description !== undefined) {
+      formData.append('description', videoData.description);
+    }
     if (videoData.metadata !== undefined) {
       formData.append('metadata', JSON.stringify(videoData.metadata));
     }
@@ -318,9 +325,8 @@ export default class VideosApi {
     const contentType = ObjectSerializer.getPreferredMediaType([
       'application/json',
     ]);
-    queryParams.headers['Content-Type'] = contentType;
     const urlSearchParams = new URLSearchParams(); 
-    urlSearchParams.append('qualities', JSON.stringify(videoQualities));
+    urlSearchParams.append('qualities', videoQualities.join(','));
 
     queryParams.searchParams = urlSearchParams
     
@@ -373,7 +379,6 @@ export default class VideosApi {
     const contentType = ObjectSerializer.getPreferredMediaType([
       'application/json',
     ]);
-    queryParams.headers['Content-Type'] = contentType;
 
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append("public", JSON.stringify(isPublic));
@@ -422,7 +427,6 @@ export default class VideosApi {
     }
     // Path Params
     const localVarPath = 'api/videos/{videoId}'
-      .substring(1)
       .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
 
     queryParams.method = 'DELETE';
@@ -480,7 +484,7 @@ export default class VideosApi {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     // Path Params
-    const localVarPath = '/videos'.substring(1);
+    const localVarPath = 'api/videos';
 
     // Query Params
     const urlSearchParams = new URLSearchParams();
@@ -544,7 +548,7 @@ export default class VideosApi {
         if (result.status == 'success'){
           return ObjectSerializer.deserialize(
             JSON.parse(JSON.stringify(result.data)),
-            'Video',
+            'VideoListResponse',
             ''
           ) as VideosListResponse
         }
@@ -583,17 +587,18 @@ Note: There may be a short delay before the new thumbnail is delivered to our CD
     if (file instanceof Readable) {
       fileBuffer = await readableToBuffer(file);
     }
-
+    if (fileBuffer === undefined){
+      throw error('file is not readable');
+    }
     // Path Params
     const localVarPath = 'api/videos/{videoId}/thumbnail'
-      .substring(1)
       .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
 
-    queryParams.method = 'POST';
+    queryParams.method = 'PATCH';
 
     const formData = new FormData();
 
-    formData.append("file", fileBuffer);
+    formData.append("thumbnail", fileBuffer);
 
     queryParams.body = formData;
 

@@ -10,11 +10,12 @@
  */
 
 import { URLSearchParams } from 'url';
-import ObjectSerializer from '../ObjectSerializer.js';
-import HttpClient, { QueryOptions } from '../HttpClient.js';
-import Webhook from '../model/Webhook.js';
-import WebhooksCreationPayload from '../model/WebhooksCreationPayload.js';
-import WebhooksListResponse from '../model/WebhooksListResponse.js';
+import ObjectSerializer from '../ObjectSerializer';
+import HttpClient, { QueryOptions } from '../HttpClient';
+import Webhook from '../model/Webhook';
+import WebhooksCreationPayload from '../model/WebhooksCreationPayload';
+import WebhooksListResponse from '../model/WebhooksListResponse';
+import HttpResponse from '../model/HttpResponse';
 
 /**
  * no description
@@ -33,7 +34,7 @@ export default class WebhooksApi {
    */
   public async create(
     webhooksCreationPayload: WebhooksCreationPayload
-  ): Promise<Webhook> {
+  ): Promise<Webhook | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (
@@ -45,7 +46,7 @@ export default class WebhooksApi {
       );
     }
     // Path Params
-    const localVarPath = '/webhooks'.substring(1);
+    const localVarPath = 'api/webhooks'.substring(1);
 
     // Body Params
     const contentType = ObjectSerializer.getPreferredMediaType([
@@ -56,7 +57,7 @@ export default class WebhooksApi {
     queryParams.body = ObjectSerializer.stringify(
       ObjectSerializer.serialize(
         webhooksCreationPayload,
-        'WebhooksCreationPayload',
+        'input',
         ''
       ),
       contentType
@@ -67,15 +68,27 @@ export default class WebhooksApi {
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
+        (response) =>{
+            let rs = ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
-              response.headers['content-type']
             ),
-            'Webhook',
+            'HttpResponse',
             ''
-          ) as Webhook
+          ) as HttpResponse
+
+          if (rs.status === "success") {
+            return ObjectSerializer.deserialize(
+              ObjectSerializer.parse(
+                rs.data,
+              ),
+              'Webhook',
+              ''
+            ) as Webhook
+          }
+          return undefined
+
+        }
       );
   }
 
@@ -84,7 +97,7 @@ export default class WebhooksApi {
    * Retrieve Webhook details
    * @param webhookId The unique webhook you wish to retreive details on.
    */
-  public async get(webhookId: string): Promise<Webhook> {
+  public async get(webhookId: string): Promise<Webhook | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (webhookId === null || webhookId === undefined) {
@@ -106,7 +119,6 @@ export default class WebhooksApi {
           ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
-              response.headers['content-type']
             ),
             'Webhook',
             ''
@@ -119,7 +131,7 @@ export default class WebhooksApi {
    * Delete a Webhook
    * @param webhookId The webhook you wish to delete.
    */
-  public async delete(webhookId: string): Promise<void> {
+  public async delete(webhookId: string): Promise<string | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (webhookId === null || webhookId === undefined) {
@@ -128,24 +140,27 @@ export default class WebhooksApi {
       );
     }
     // Path Params
-    const localVarPath = '/webhooks/{webhookId}'
+    const localVarPath = 'api/webhooks/{webhookId}'
       .substring(1)
       .replace('{' + 'webhookId' + '}', encodeURIComponent(String(webhookId)));
 
     queryParams.method = 'DELETE';
 
+
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
+        (response) =>{
+            let rs = ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
-              response.headers['content-type']
             ),
-            'void',
+            'HttpResponse',
             ''
-          ) as void
+          ) as HttpResponse
+
+          return rs.message
+        }
       );
   }
 
@@ -156,42 +171,60 @@ You can filter what the webhook list that the API returns using the parameters d
    * List all webhooks
    * @param {Object} searchParams
    * @param { string } searchParams.events The webhook event that you wish to filter on.
-   * @param { number } searchParams.currentPage Choose the number of search results to return per page. Minimum value: 1
-   * @param { number } searchParams.pageSize Results per page. Allowed values 1-100, default is 25.
+   * @param { string } searchParams.sortBy The webhook event that you wish to filter on.
+   * @param { string } searchParams.sortOrder The webhook event that you wish to filter on.
+   * @param { number } searchParams.limit Choose the number of search results to return per page. Minimum value: 1
+   * @param { number } searchParams.offset Results per page. Allowed values 1-100, default is 25.
    */
   public async list({
     events,
-    currentPage,
-    pageSize,
+    sortBy,
+    sortOrder,
+    limit,
+    offset,
   }: {
     events?: string;
-    currentPage?: number;
-    pageSize?: number;
+    sortBy?: string;
+    sortOrder?: string;
+    limit?: number;
+    offset?: number;
   } = {}): Promise<WebhooksListResponse> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     // Path Params
-    const localVarPath = '/webhooks'.substring(1);
+    const localVarPath = 'api/webhooks'.substring(1);
 
     // Query Params
     const urlSearchParams = new URLSearchParams();
 
+    if (sortBy !== undefined) {
+      urlSearchParams.append(
+        'sort_by',
+        ObjectSerializer.serialize(events, 'string', '')
+      );
+    }
+    if (sortOrder !== undefined) {
+      urlSearchParams.append(
+        'order',
+        ObjectSerializer.serialize(events, 'string', '')
+      );
+    }
     if (events !== undefined) {
       urlSearchParams.append(
         'events',
         ObjectSerializer.serialize(events, 'string', '')
       );
     }
-    if (currentPage !== undefined) {
+    if (offset !== undefined) {
       urlSearchParams.append(
-        'currentPage',
-        ObjectSerializer.serialize(currentPage, 'number', '')
+        'offset',
+        ObjectSerializer.serialize(offset, 'number', '')
       );
     }
-    if (pageSize !== undefined) {
+    if (limit !== undefined) {
       urlSearchParams.append(
-        'pageSize',
-        ObjectSerializer.serialize(pageSize, 'number', '')
+        'limit',
+        ObjectSerializer.serialize(limit, 'number', '')
       );
     }
 
@@ -206,7 +239,6 @@ You can filter what the webhook list that the API returns using the parameters d
           ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
-              response.headers['content-type']
             ),
             'WebhooksListResponse',
             ''

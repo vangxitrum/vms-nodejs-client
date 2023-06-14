@@ -4,13 +4,10 @@
       "baseUrl": "src",
       "declaration": true,
       "module": "esnext",
-      "outDir": "lib",
+      "outDir": "lib/mjs",
       "target": "esnext"
     },
     "include": [
       "./src"
     ],
-    "exclude": [
-      "./src/index-cjs.ts"
-    ]
 }

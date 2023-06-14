@@ -10,12 +10,11 @@
  */
 
 import AttributeType from './AttributeType.js';
-import Pagination from './Pagination.js';
 import Webhook from './Webhook.js';
 
 export default class WebhooksListResponse {
   'data': Array<Webhook>;
-  'pagination': Pagination;
+  'total': number;
 
   static readonly discriminator?: string = undefined;
 
@@ -27,9 +26,9 @@ export default class WebhooksListResponse {
       format: '',
     },
     {
-      name: 'pagination',
-      baseName: 'pagination',
-      type: 'Pagination',
+      name: 'total',
+      baseName: 'total',
+      type: 'number',
       format: '',
     },
   ];

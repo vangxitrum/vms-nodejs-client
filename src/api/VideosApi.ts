@@ -1,34 +1,17 @@
-/**
- * @api.video/nodejs-client
- * api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
- *
- * The version of the OpenAPI document: 1
- *
- *
- * NOTE: This class is auto generated.
- * Do not edit the class manually.
- */
-
 import path from 'path';
 import { existsSync, statSync, createReadStream } from 'fs';
 import { URLSearchParams } from 'url';
 import FormData from 'form-data';
-import ObjectSerializer from '../ObjectSerializer.js';
-import HttpClient, { QueryOptions } from '../HttpClient.js';
-import ProgressiveSession from '../model/ProgressiveSession.js';
-import Video from '../model/Video.js';
-import VideoCreationPayload from '../model/VideoCreationPayload.js';
-import VideoStatus from '../model/VideoStatus.js';
-import VideoThumbnailPickPayload from '../model/VideoThumbnailPickPayload.js';
-import VideoUpdatePayload from '../model/VideoUpdatePayload.js';
-import VideosListResponse from '../model/VideosListResponse.js';
-import UploadProgressEvent from '../model/UploadProgressEvent.js';
+import ObjectSerializer from '../ObjectSerializer';
+import HttpClient, { QueryOptions } from '../HttpClient';
+import Video from '../model/Video';
+import HttpResponse from '../model/HttpResponse';
+import VideoCreationPayload from '../model/VideoCreationPayload';
+import VideoUpdatePayload from '../model/VideoUpdatePayload';
+import VideosListResponse from '../model/VideosListResponse';
 import { Readable } from 'stream';
-import { readableToBuffer } from '../HttpClient.js';
+import { readableToBuffer } from '../HttpClient';
 
-/**
- * no description
- */
 export default class VideosApi {
   private httpClient: HttpClient;
 
@@ -36,185 +19,18 @@ export default class VideosApi {
     this.httpClient = httpClient;
   }
 
-  /**
-   * We have tutorials on: * [Creating and uploading videos](https://api.video/blog/tutorials/video-upload-tutorial) * [Uploading large videos](https://api.video/blog/tutorials/video-upload-tutorial-large-videos) * [Using tags with videos](https://api.video/blog/tutorials/video-tagging-best-practices) * [Private videos](https://api.video/blog/tutorials/tutorial-private-videos) * [Using Dynamic Metadata](https://api.video/blog/tutorials/dynamic-metadata)  * Full list of [tutorials](https://api.video/blog/endpoints/video-create) that demonstrate this endpoint.
-   * Create a video
-   * @param videoCreationPayload video to create
-   */
-  public async create(
-    videoCreationPayload: VideoCreationPayload
-  ): Promise<Video> {
-    const queryParams: QueryOptions = {};
-    queryParams.headers = {};
-    if (videoCreationPayload === null || videoCreationPayload === undefined) {
-      throw new Error(
-        'Required parameter videoCreationPayload was null or undefined when calling create.'
-      );
-    }
-    // Path Params
-    const localVarPath = '/videos'.substring(1);
-
-    // Body Params
-    const contentType = ObjectSerializer.getPreferredMediaType([
-      'application/json',
-    ]);
-    queryParams.headers['Content-Type'] = contentType;
-
-    queryParams.body = ObjectSerializer.stringify(
-      ObjectSerializer.serialize(
-        videoCreationPayload,
-        'VideoCreationPayload',
-        ''
-      ),
-      contentType
-    );
-
-    queryParams.method = 'POST';
-
-    return this.httpClient
-      .call(localVarPath, queryParams)
-      .then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'Video',
-            ''
-          ) as Video
-      );
-  }
-
-  /**
+/**
    * Upload a video
-   * This will create a progressive upload session.
-   * @param videoId Enter the videoId you want to use to upload your video.
-   */
-  public createUploadProgressiveSession(
-    videoId: string
-  ): ProgressiveSession<Video> {
-    class UploadProgressiveSession<Type> {
-      private httpClient: HttpClient;
-      private currentPart = 1;
-
-      constructor(httpClient: HttpClient) {
-        this.httpClient = httpClient;
-      }
-
-      uploadPart(
-        file: string,
-        progressListener?: (event: UploadProgressEvent) => void
-      ) {
-        return this.upload(file, false, progressListener);
-      }
-
-      uploadLastPart(
-        file: string,
-        progressListener?: (event: UploadProgressEvent) => void
-      ) {
-        return this.upload(file, true, progressListener);
-      }
-
-      upload(
-        file: string,
-        isLast: boolean,
-        progressListener?: (event: UploadProgressEvent) => void
-      ) {
-        const queryParams: QueryOptions = {};
-        queryParams.headers = {};
-
-        if (videoId === null || videoId === undefined) {
-          throw new Error(
-            'Required parameter videoId was null or undefined when calling upload.'
-          );
-        }
-
-        if (!existsSync(file)) {
-          throw new Error(`${file} must be a readable source file`);
-        }
-
-        const length = statSync(file).size;
-        if (length <= 0) {
-          throw new Error(`${file} is empty`);
-        }
-        // Path Params
-        const localVarPath = '/videos/{videoId}/source'
-          .substring(1)
-          .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
-
-        queryParams.method = 'POST';
-
-        const formData = new FormData();
-
-        const filename = path.basename(file);
-        formData.append(filename, createReadStream(file), filename);
-        queryParams.body = formData;
-        queryParams.headers['Content-Range'] = `part ${this.currentPart}/${
-          isLast ? this.currentPart : '*'
-        }`;
-        const call = this.httpClient.call(localVarPath, queryParams);
-        if (progressListener) {
-          call.on('uploadProgress', (progress: any) => {
-            progressListener({
-              chunksCount: 1,
-              currentChunk: 0,
-              currentChunkUploadedBytes: progress.transferred,
-              currentChunkTotalBytes: progress.total || 0,
-              uploadedBytes: progress.transferred,
-              totalBytes: progress.total || 0,
-            });
-          });
-        }
-        this.currentPart++;
-        return call.then(
-          (response) =>
-            ObjectSerializer.deserialize(
-              ObjectSerializer.parse(
-                response.body,
-                response.headers['content-type']
-              ),
-              'Video',
-              ''
-            ) as Type
-        );
-      }
-    }
-
-    return new UploadProgressiveSession<Video>(this.httpClient);
-  }
-  /**
-   * To upload a video to the videoId you created. You can only upload your video to the videoId once.
-
-
-
-We offer 2 types of upload: 
-
-* Regular upload 
-
-* Progressive upload
-
-The latter allows you to split a video source into X chunks and send those chunks independently (concurrently or sequentially). The 2 main goals for our users are to
-
-  * allow the upload of video sources > 200 MiB (200 MiB = the max. allowed file size for regular upload)
-
-  * allow to send a video source "progressively", i.e., before before knowing the total size of the video.
-
-  Once all chunks have been sent, they are reaggregated to one source file. The video source is considered as "completely sent" when the "last" chunk is sent (i.e., the chunk that "completes" the upload).
-
-
-   * Upload a video
-   * @param videoId Enter the videoId you want to use to upload your video.
-   * @param file The path to the video you would like to upload. The path must be local. If you want to use a video from an online source, you must use the \\\&quot;/videos\\\&quot; endpoint and add the \\\&quot;source\\\&quot; parameter when you create a new video.
+   * @param videoData your video's infomation.
+   * @param file The local path to the video you would like to upload.
    */
   public async upload(
-    videoId: string,
-    file: string,
-    progressListener?: (event: UploadProgressEvent) => void
-  ): Promise<Video> {
+    videoData: VideoCreationPayload,
+    file: string
+  ): Promise<Video | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
-    if (videoId === null || videoId === undefined) {
+    if (videoData === null || videoData === undefined) {
       throw new Error(
         'Required parameter videoId was null or undefined when calling upload.'
       );
@@ -222,248 +38,86 @@ The latter allows you to split a video source into X chunks and send those chunk
     if (!existsSync(file)) {
       throw new Error(`${file} must be a readable source file`);
     }
-
-    const length = statSync(file).size;
-    if (length <= 0) {
-      throw new Error(`${file} is empty`);
-    }
     // Path Params
-    const localVarPath = '/videos/{videoId}/source'
-      .substring(1)
-      .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
+    const localVarPath = 'api/videos/upload'
 
     queryParams.method = 'POST';
 
     const formData = new FormData();
+    formData.append('title', videoData.title);
+    formData.append('description', videoData.description);
+    if (videoData.metadata !== undefined) {
+      formData.append('metadata', JSON.stringify(videoData.metadata));
+    }
+    if (videoData.tags !== undefined) {
+      formData.append('tags', JSON.stringify(videoData.tags));
+    }
+    if (videoData.qualities !== undefined) {
+      formData.append('qualities', JSON.stringify(videoData.qualities));
+    }
+    if (videoData.public === undefined) {
+      videoData.public = true; 
+    }
+    formData.append('public', JSON.stringify(videoData.public));
+    if (videoData.panoramic === undefined) {
+      videoData.panoramic = false; 
+    }
+    formData.append('panoramic', JSON.stringify(videoData.panoramic));
+    if (videoData.mp4_support === undefined) {
+      videoData.mp4_support = false;
+    }
+    formData.append('mp4_support', JSON.stringify(videoData.mp4_support));
+    formData.append('file', createReadStream(file));
 
-    const chunkSize = this.httpClient.getChunkSize();
-    // Upload in a single request when file is small enough
-    if (chunkSize > length) {
-      const filename = path.basename(file);
-      formData.append(filename, createReadStream(file), filename);
-      queryParams.body = formData;
-      const call = this.httpClient.call(localVarPath, queryParams);
-      if (progressListener) {
-        call.on('uploadProgress', (progress) => {
-          progressListener({
-            chunksCount: 1,
-            currentChunk: 0,
-            currentChunkUploadedBytes: progress.transferred,
-            currentChunkTotalBytes: progress.total || 0,
-            uploadedBytes: progress.transferred,
-            totalBytes: progress.total || 0,
-          });
-        });
-      }
-      return call.then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
+    queryParams.body = formData;
+    const call = this.httpClient.call(localVarPath, queryParams);
+    
+    return call.then(
+      (response) => {
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        if (result.status == 'success'){
+          return ObjectSerializer.deserialize(
+            JSON.parse(JSON.stringify(result.data)),
             'Video',
             ''
           ) as Video
-      );
-    }
-    let uploadChunkSize = chunkSize;
-    let lastBody;
-    let stream;
-    let chunkNumber = 0;
-
-    const partsCount = Math.ceil(length / chunkSize);
-    let part = 1;
-
-    for (let offset = 0; offset < length; offset += chunkSize, chunkNumber++) {
-      // default the upload size to be as large as possible.
-      uploadChunkSize = chunkSize;
-      // BUT,if we are on the last chunk to be uploaded, the uploaded chunk must be
-      // reduced to match the remaining bytes in the file
-      if (offset + uploadChunkSize > length) {
-        uploadChunkSize = length - offset;
-      }
-
-      const filename = path.basename(file);
-      const chunkFormData = new FormData();
-      stream = createReadStream(file, {
-        start: offset,
-        end: uploadChunkSize + offset - 1,
-      });
-      chunkFormData.append(filename, stream, filename);
-
-      queryParams.body = chunkFormData;
-      queryParams.headers['Content-Range'] = `part ${part}/${partsCount}`;
-      part++;
-
-      const call = this.httpClient.call(localVarPath, queryParams);
-
-      if (progressListener) {
-        call.on('uploadProgress', (progress) => {
-          progressListener({
-            chunksCount: Math.ceil(length / chunkSize),
-            currentChunk: chunkNumber,
-            currentChunkUploadedBytes: progress.transferred,
-            currentChunkTotalBytes: progress.total || 0,
-            uploadedBytes: Math.min(
-              length,
-              chunkNumber * chunkSize + progress.transferred
-            ),
-            totalBytes: length,
-          });
-        });
-      }
-
-      lastBody = await call.then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'Video',
-            ''
-          ) as Video
-      );
-
-      stream.close();
-    }
-
-    return Promise.resolve(lastBody as Video);
-  }
-
-  /**
-   * Upload with an upload token
-   * This will create a progressive upload session.
-   * @param token The unique identifier for the token you want to use to upload a video.
-   */
-  public createUploadWithUploadTokenProgressiveSession(
-    token: string
-  ): ProgressiveSession<Video> {
-    class UploadWithUploadTokenProgressiveSession<Type> {
-      private httpClient: HttpClient;
-      private currentPart = 1;
-      private videoId?: string;
-
-      constructor(httpClient: HttpClient) {
-        this.httpClient = httpClient;
-      }
-
-      uploadPart(
-        file: string,
-        progressListener?: (event: UploadProgressEvent) => void
-      ) {
-        return this.upload(file, false, progressListener);
-      }
-
-      uploadLastPart(
-        file: string,
-        progressListener?: (event: UploadProgressEvent) => void
-      ) {
-        return this.upload(file, true, progressListener);
-      }
-
-      upload(
-        file: string,
-        isLast: boolean,
-        progressListener?: (event: UploadProgressEvent) => void
-      ) {
-        const queryParams: QueryOptions = {};
-        queryParams.headers = {};
-
-        if (token === null || token === undefined) {
-          throw new Error(
-            'Required parameter token was null or undefined when calling uploadWithUploadToken.'
-          );
         }
 
-        if (!existsSync(file)) {
-          throw new Error(`${file} must be a readable source file`);
-        }
-
-        const length = statSync(file).size;
-        if (length <= 0) {
-          throw new Error(`${file} is empty`);
-        }
-        // Path Params
-        const localVarPath = '/upload'.substring(1);
-
-        // Query Params
-        const urlSearchParams = new URLSearchParams();
-
-        if (token !== undefined) {
-          urlSearchParams.append(
-            'token',
-            ObjectSerializer.serialize(token, 'string', '')
-          );
-        }
-        queryParams.searchParams = urlSearchParams;
-
-        queryParams.method = 'POST';
-
-        const formData = new FormData();
-
-        const filename = path.basename(file);
-        formData.append(filename, createReadStream(file), filename);
-        if (this.videoId) {
-          formData.append('videoId', this.videoId);
-        }
-        queryParams.body = formData;
-        queryParams.headers['Content-Range'] = `part ${this.currentPart}/${
-          isLast ? this.currentPart : '*'
-        }`;
-        const call = this.httpClient.call(localVarPath, queryParams);
-        if (progressListener) {
-          call.on('uploadProgress', (progress: any) => {
-            progressListener({
-              chunksCount: 1,
-              currentChunk: 0,
-              currentChunkUploadedBytes: progress.transferred,
-              currentChunkTotalBytes: progress.total || 0,
-              uploadedBytes: progress.transferred,
-              totalBytes: progress.total || 0,
-            });
-          });
-        }
-        this.currentPart++;
-        return call
-          .then(
-            (response) =>
-              ObjectSerializer.deserialize(
-                ObjectSerializer.parse(
-                  response.body,
-                  response.headers['content-type']
-                ),
-                'Video',
-                ''
-              ) as Type
-          )
-          .then((res) => {
-            this.videoId = (res as any).videoId;
-            return res;
-          });
+        return undefined;
       }
-    }
-
-    return new UploadWithUploadTokenProgressiveSession<Video>(this.httpClient);
+    );
   }
   /**
    * This method allows you to send a video using an upload token. Upload tokens are especially useful when the upload is done from the client side. If you want to upload a video from your server-side application, you'd better use the [standard upload method](#upload).
    * Upload with an upload token
-   * @param token The unique identifier for the token you want to use to upload a video.
-   * @param file The path to the video you want to upload.
+   * @param uploadToken The unique identifier for the token you want to use to upload a video.
+   * @param uploadToken Your video's infomation.
+   * @param file The local path to the video you want to upload.
    */
   public async uploadWithUploadToken(
-    token: string,
-    file: string,
-    progressListener?: (event: UploadProgressEvent) => void
-  ): Promise<Video> {
+    uploadToken: string,
+    videoData: VideoCreationPayload,
+    file: string
+  ): Promise<Video | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
-    if (token === null || token === undefined) {
+    if (uploadToken === null || uploadToken === undefined) {
       throw new Error(
-        'Required parameter token was null or undefined when calling uploadWithUploadToken.'
+        'Required parameter upload token was null or undefined when calling uploadWithUploadToken.'
       );
+    }
+
+    this.httpClient.addUploadTokenHeader(uploadToken);
+
+    if (videoData === null || videoData === undefined) {
+      throw new Error (
+        'Required parameter videoData was null or undefined when calling uploadWithUploadToken.'
+      )
     }
     if (!existsSync(file)) {
       throw new Error(`${file} must be a readable source file`);
@@ -474,126 +128,66 @@ The latter allows you to split a video source into X chunks and send those chunk
       throw new Error(`${file} is empty`);
     }
     // Path Params
-    const localVarPath = '/upload'.substring(1);
+    const localVarPath = 'api/videos/upload';
 
     // Query Params
-    const urlSearchParams = new URLSearchParams();
-
-    if (token !== undefined) {
-      urlSearchParams.append(
-        'token',
-        ObjectSerializer.serialize(token, 'string', '')
-      );
-    }
-
-    queryParams.searchParams = urlSearchParams;
-
     queryParams.method = 'POST';
 
     const formData = new FormData();
+    formData.append('title', videoData.title);
+    formData.append('description', videoData.description);
+    if (videoData.metadata !== undefined) {
+      formData.append('metadata', JSON.stringify(videoData.metadata));
+    }
+    if (videoData.tags !== undefined) {
+      formData.append('tags', JSON.stringify(videoData.tags));
+    }
+    if (videoData.qualities !== undefined) {
+      formData.append('qualities', JSON.stringify(videoData.qualities));
+    }
+    if (videoData.public === undefined) {
+      videoData.public = true; 
+    }
+    formData.append('public', JSON.stringify(videoData.public));
+    if (videoData.panoramic === undefined) {
+      videoData.panoramic = false; 
+    }
+    formData.append('panoramic', JSON.stringify(videoData.panoramic));
+    if (videoData.mp4_support === undefined) {
+      videoData.mp4_support = false;
+    }
+    formData.append('mp4_support', JSON.stringify(videoData.mp4_support));
+    formData.append('file', createReadStream(file));
 
-    const chunkSize = this.httpClient.getChunkSize();
-    // Upload in a single request when file is small enough
-    if (chunkSize > length) {
-      const filename = path.basename(file);
-      formData.append(filename, createReadStream(file), filename);
-      queryParams.body = formData;
-      const call = this.httpClient.call(localVarPath, queryParams);
-      if (progressListener) {
-        call.on('uploadProgress', (progress) => {
-          progressListener({
-            chunksCount: 1,
-            currentChunk: 0,
-            currentChunkUploadedBytes: progress.transferred,
-            currentChunkTotalBytes: progress.total || 0,
-            uploadedBytes: progress.transferred,
-            totalBytes: progress.total || 0,
-          });
-        });
-      }
-      return call.then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
+    queryParams.body = formData;
+    const call = this.httpClient.call(localVarPath, queryParams);
+    
+    return call.then(
+      (response) => {
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        if (result.status == 'success'){
+          return ObjectSerializer.deserialize(
+            JSON.parse(JSON.stringify(result.data)),
             'Video',
             ''
           ) as Video
-      );
-    }
-    let uploadChunkSize = chunkSize;
-    let lastBody;
-    let stream;
-    let chunkNumber = 0;
+        }
 
-    const partsCount = Math.ceil(length / chunkSize);
-    let part = 1;
-
-    for (let offset = 0; offset < length; offset += chunkSize, chunkNumber++) {
-      // default the upload size to be as large as possible.
-      uploadChunkSize = chunkSize;
-      // BUT,if we are on the last chunk to be uploaded, the uploaded chunk must be
-      // reduced to match the remaining bytes in the file
-      if (offset + uploadChunkSize > length) {
-        uploadChunkSize = length - offset;
+        return undefined;
       }
-
-      const filename = path.basename(file);
-      const chunkFormData = new FormData();
-      stream = createReadStream(file, {
-        start: offset,
-        end: uploadChunkSize + offset - 1,
-      });
-      chunkFormData.append(filename, stream, filename);
-
-      queryParams.body = chunkFormData;
-      queryParams.headers['Content-Range'] = `part ${part}/${partsCount}`;
-      part++;
-
-      const call = this.httpClient.call(localVarPath, queryParams);
-
-      if (progressListener) {
-        call.on('uploadProgress', (progress) => {
-          progressListener({
-            chunksCount: Math.ceil(length / chunkSize),
-            currentChunk: chunkNumber,
-            currentChunkUploadedBytes: progress.transferred,
-            currentChunkTotalBytes: progress.total || 0,
-            uploadedBytes: Math.min(
-              length,
-              chunkNumber * chunkSize + progress.transferred
-            ),
-            totalBytes: length,
-          });
-        });
-      }
-
-      lastBody = await call.then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'Video',
-            ''
-          ) as Video
-      );
-
-      stream.close();
-    }
-
-    return Promise.resolve(lastBody as Video);
+    );
   }
 
   /**
-   * This call provides the same information provided on video creation. For private videos, it will generate a unique token url. Use this to retrieve any details you need about a video, or set up a private viewing URL.
-   * Retrieve a video
-   * @param videoId The unique identifier for the video you want details about.
+   * Retrieve video's detail
+   * @param videoId The unique identifier of the video you want details about.
    */
-  public async get(videoId: string): Promise<Video> {
+  public async get(videoId: string): Promise<Video | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (videoId === null || videoId === undefined) {
@@ -602,43 +196,44 @@ The latter allows you to split a video source into X chunks and send those chunk
       );
     }
     // Path Params
-    const localVarPath = '/videos/{videoId}'
-      .substring(1)
+    const localVarPath = 'api/videos/{videoId}'
       .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
 
     queryParams.method = 'GET';
 
     return this.httpClient
-      .call(localVarPath, queryParams)
-      .then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
+    .call(localVarPath, queryParams)
+    .then(
+      (response) => {
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        if (result.status == 'success'){
+          return ObjectSerializer.deserialize(
+            JSON.parse(JSON.stringify(result.data)),
             'Video',
             ''
           ) as Video
-      );
+        }
+
+        return undefined;
+      }
+    );
   }
 
   /**
    * Updates the parameters associated with your video. The video you are updating is determined by the video ID you provide. 
-
-
-
-NOTE: If you are updating an array, you must provide the entire array as what you provide here overwrites what is in the system rather than appending to it.
-
-
    * Update a video
    * @param videoId The video ID for the video you want to delete.
    * @param videoUpdatePayload 
    */
-  public async update(
+  public async updateVideoInfomation(
     videoId: string,
     videoUpdatePayload: VideoUpdatePayload = {}
-  ): Promise<Video> {
+  ): Promise<string | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (videoId === null || videoId === undefined) {
@@ -652,8 +247,7 @@ NOTE: If you are updating an array, you must provide the entire array as what yo
       );
     }
     // Path Params
-    const localVarPath = '/videos/{videoId}'
-      .substring(1)
+    const localVarPath = 'api/videos/{videoId}'
       .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
 
     // Body Params
@@ -663,33 +257,162 @@ NOTE: If you are updating an array, you must provide the entire array as what yo
     queryParams.headers['Content-Type'] = contentType;
 
     queryParams.body = ObjectSerializer.stringify(
-      ObjectSerializer.serialize(videoUpdatePayload, 'VideoUpdatePayload', ''),
+      ObjectSerializer.serialize(videoUpdatePayload, 'UpdateVideoInput', ''),
       contentType
     );
 
     queryParams.method = 'PATCH';
 
     return this.httpClient
-      .call(localVarPath, queryParams)
-      .then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'Video',
-            ''
-          ) as Video
-      );
+    .call(localVarPath, queryParams)
+    .then(
+      (response) => {
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        return result.message
+        // if (result.status == 'success'){
+        //   return ObjectSerializer.deserialize(
+        //     JSON.parse(JSON.stringify(result.data)),
+        //     'Video',
+        //     ''
+        //   ) as Video
+        // }
+
+        return undefined;
+      }
+    );
   }
 
+
+  /**
+   * Updates the parameters associated with your video. The video you are updating is determined by the video ID you provide. 
+   * Update a video
+   * @param videoId The video ID for the video you want to delete.
+   * @param videoQualities The qualities you want to update for your video. 
+   */
+  public async updateVideoProfile(
+    videoId: string,
+    videoQualities: Array<string>
+  ): Promise<string | undefined> {
+    const queryParams: QueryOptions = {};
+    queryParams.headers = {};
+    if (videoId === null || videoId === undefined) {
+      throw new Error(
+        'Required parameter videoId was null or undefined when calling update.'
+      );
+    }
+    if (videoQualities === null || videoQualities === undefined) {
+      throw new Error(
+        'Required parameter videoUpdatePayload was null or undefined when calling update.'
+      );
+    }
+    // Path Params
+    const localVarPath = 'api/videos/{videoId}/profile'
+      .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
+
+    // Body Params
+    const contentType = ObjectSerializer.getPreferredMediaType([
+      'application/json',
+    ]);
+    queryParams.headers['Content-Type'] = contentType;
+    const urlSearchParams = new URLSearchParams(); 
+    urlSearchParams.append('qualities', JSON.stringify(videoQualities));
+
+    queryParams.searchParams = urlSearchParams
+    
+    queryParams.method = 'PATCH';
+
+    return this.httpClient
+    .call(localVarPath, queryParams)
+    .then(
+      (response) => {
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        return result.message
+        // if (result.status == 'success'){
+        //   return ObjectSerializer.deserialize(
+        //     JSON.parse(JSON.stringify(result.data)),
+        //     'Video',
+        //     ''
+        //   ) as Video
+        // }
+      }
+    );
+  }
+
+  /**
+   * Updates the parameters associated with your video. The video you are updating is determined by the video ID you provide. 
+   * Update a video
+   * @param videoId The video ID for the video you want to delete.
+   * @param videoUpdatePayload 
+   */
+  public async updateVideoSetting(
+    videoId: string,
+    isPublic: boolean
+  ): Promise<string | undefined> {
+    const queryParams: QueryOptions = {};
+    queryParams.headers = {};
+    if (videoId === null || videoId === undefined) {
+      throw new Error(
+        'Required parameter videoId was null or undefined when calling update.'
+      );
+    }
+    // Path Params
+    const localVarPath = 'api/videos/{videoId}/setting'
+      .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
+
+    // Body Params
+    const contentType = ObjectSerializer.getPreferredMediaType([
+      'application/json',
+    ]);
+    queryParams.headers['Content-Type'] = contentType;
+
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append("public", JSON.stringify(isPublic));
+
+    queryParams.searchParams = urlSearchParams
+
+    queryParams.method = 'PATCH';
+
+    return this.httpClient
+    .call(localVarPath, queryParams)
+    .then(
+      (response) => {
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        return result.message
+        // if (result.status == 'success'){
+        //   return ObjectSerializer.deserialize(
+        //     JSON.parse(JSON.stringify(result.data)),
+        //     'Video',
+        //     ''
+        //   ) as Video
+        // }
+
+        return undefined;
+      }
+    );
+  }
+
+  
   /**
    * If you do not need a video any longer, you can send a request to delete it. All you need is the videoId.
    * Delete a video
    * @param videoId The video ID for the video you want to delete.
    */
-  public async delete(videoId: string): Promise<void> {
+  public async delete(videoId: string): Promise<string | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (videoId === null || videoId === undefined) {
@@ -698,62 +421,62 @@ NOTE: If you are updating an array, you must provide the entire array as what yo
       );
     }
     // Path Params
-    const localVarPath = '/videos/{videoId}'
+    const localVarPath = 'api/videos/{videoId}'
       .substring(1)
       .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
 
     queryParams.method = 'DELETE';
 
     return this.httpClient
-      .call(localVarPath, queryParams)
-      .then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'void',
-            ''
-          ) as void
-      );
+    .call(localVarPath, queryParams)
+    .then(
+      (response) => {
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        return result.message
+        // if (result.status == 'success'){
+        //   return ObjectSerializer.deserialize(
+        //     JSON.parse(JSON.stringify(result.data)),
+        //     'Video',
+        //     ''
+        //   ) as Video
+        // }
+
+        return undefined;
+      }
+    );
   }
 
   /**
    * This method returns a list of your videos (with all their details). With no parameters added, the API returns the first page of all videos. You can filter videos using the parameters described below.
    * List all videos
-   * @param {Object} searchParams
-   * @param { string } searchParams.title The title of a specific video you want to find. The search will match exactly to what term you provide and return any videos that contain the same term as part of their titles.
-   * @param { Array&lt;string&gt; } searchParams.tags A tag is a category you create and apply to videos. You can search for videos with particular tags by listing one or more here. Only videos that have all the tags you list will be returned.
+   * @param {Object} filter
+   * @param { string } filter.search The keyword you want to search in title or description.
    * @param { { [key: string]: string; } } searchParams.metadata Videos can be tagged with metadata tags in key:value pairs. You can search for videos with specific key value pairs using this parameter. [Dynamic Metadata](https://api.video/blog/endpoints/dynamic-metadata) allows you to define a key that allows any value pair.
-   * @param { string } searchParams.description If you described a video with a term or sentence, you can add it here to return videos containing this string.
-   * @param { string } searchParams.liveStreamId If you know the ID for a live stream, you can retrieve the stream by adding the ID for it here.
-   * @param { string } searchParams.sortBy Allowed: publishedAt, title. You can search by the time videos were published at, or by title.
+   * @param { string } searchParams.sortBy Allowed: created_at, title, duration, size, view. You can search by the time videos were published at, or by title.
    * @param { string } searchParams.sortOrder Allowed: asc, desc. asc is ascending and sorts from A to Z. desc is descending and sorts from Z to A.
-   * @param { number } searchParams.currentPage Choose the number of search results to return per page. Minimum value: 1
-   * @param { number } searchParams.pageSize Results per page. Allowed values 1-100, default is 25.
+   * @param { number } searchParams.limit Choose the number of videos you want to get. Minimum value: 1
+   * @param { number } searchParams.offer Choose the number of videos you want to skip. Allowed values 1-100, default is 25.
    */
   public async list({
-    title,
-    tags,
+    search,
     metadata,
-    description,
-    liveStreamId,
     sortBy,
     sortOrder,
-    currentPage,
-    pageSize,
+    limit,
+    offset,
   }: {
-    title?: string;
-    tags?: Array<string>;
+    search?: string;
     metadata?: { [key: string]: string };
-    description?: string;
-    liveStreamId?: string;
     sortBy?: string;
     sortOrder?: string;
-    currentPage?: number;
-    pageSize?: number;
-  } = {}): Promise<VideosListResponse> {
+    limit?: number;
+    offset?: number;
+  } = {}): Promise<VideosListResponse | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     // Path Params
@@ -762,20 +485,10 @@ NOTE: If you are updating an array, you must provide the entire array as what yo
     // Query Params
     const urlSearchParams = new URLSearchParams();
 
-    if (title !== undefined) {
+    if (search !== undefined) {
       urlSearchParams.append(
-        'title',
-        ObjectSerializer.serialize(title, 'string', '')
-      );
-    }
-    if (tags !== undefined) {
-      const tagsSerialized = ObjectSerializer.serialize(
-        tags,
-        'Array<string>',
-        ''
-      );
-      tagsSerialized.forEach((v: string) =>
-        urlSearchParams.append('tags[]', v)
+        'search',
+        ObjectSerializer.serialize(search, 'string', '')
       );
     }
     if (metadata !== undefined) {
@@ -789,40 +502,28 @@ NOTE: If you are updating an array, you must provide the entire array as what yo
         )
       );
     }
-    if (description !== undefined) {
-      urlSearchParams.append(
-        'description',
-        ObjectSerializer.serialize(description, 'string', '')
-      );
-    }
-    if (liveStreamId !== undefined) {
-      urlSearchParams.append(
-        'liveStreamId',
-        ObjectSerializer.serialize(liveStreamId, 'string', '')
-      );
-    }
     if (sortBy !== undefined) {
       urlSearchParams.append(
-        'sortBy',
+        'sort_by',
         ObjectSerializer.serialize(sortBy, 'string', '')
       );
     }
     if (sortOrder !== undefined) {
       urlSearchParams.append(
-        'sortOrder',
+        'order',
         ObjectSerializer.serialize(sortOrder, 'string', '')
       );
     }
-    if (currentPage !== undefined) {
+    if (limit !== undefined) {
       urlSearchParams.append(
-        'currentPage',
-        ObjectSerializer.serialize(currentPage, 'number', '')
+        'limit',
+        ObjectSerializer.serialize(limit, 'number', '')
       );
     }
-    if (pageSize !== undefined) {
+    if (offset !== undefined) {
       urlSearchParams.append(
-        'pageSize',
-        ObjectSerializer.serialize(pageSize, 'number', '')
+        'offset',
+        ObjectSerializer.serialize(offset, 'number', '')
       );
     }
 
@@ -833,31 +534,30 @@ NOTE: If you are updating an array, you must provide the entire array as what yo
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'VideosListResponse',
+        (response) =>{
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        if (result.status == 'success'){
+          return ObjectSerializer.deserialize(
+            JSON.parse(JSON.stringify(result.data)),
+            'Video',
             ''
           ) as VideosListResponse
+        }
+
+        return undefined
+        }
       );
   }
 
   /**
    * The thumbnail is the poster that appears in the player window before video playback begins.
-
-
-
 This endpoint allows you to upload an image for the thumbnail.
-
-
-
 To select a still frame from the video using a time stamp, use the [dedicated method](#pickThumbnail) to pick a time in the video.
-
-
-
 Note: There may be a short delay before the new thumbnail is delivered to our CDN.
    * Upload a thumbnail
    * @param videoId Unique identifier of the chosen video 
@@ -866,7 +566,7 @@ Note: There may be a short delay before the new thumbnail is delivered to our CD
   public async uploadThumbnail(
     videoId: string,
     file: string | Readable | Buffer
-  ): Promise<Video> {
+  ): Promise<string | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (videoId === null || videoId === undefined) {
@@ -885,7 +585,7 @@ Note: There may be a short delay before the new thumbnail is delivered to our CD
     }
 
     // Path Params
-    const localVarPath = '/videos/{videoId}/thumbnail'
+    const localVarPath = 'api/videos/{videoId}/thumbnail'
       .substring(1)
       .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
 
@@ -893,128 +593,66 @@ Note: There may be a short delay before the new thumbnail is delivered to our CD
 
     const formData = new FormData();
 
-    formData.append(fileName, fileBuffer, fileName);
+    formData.append("file", fileBuffer);
 
     queryParams.body = formData;
-    return this.httpClient
-      .call(localVarPath, queryParams)
-      .then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'Video',
-            ''
-          ) as Video
-      );
-  }
-
-  /**
-   * Pick a thumbnail from the given time code. 
-
-
-
-If you'd like to upload an image for your thumbnail, use the dedicated [method](#uploadThumbnail). 
-
-
-
-There may be a short delay for the thumbnail to update.
-
-
-   * Pick a thumbnail
-   * @param videoId Unique identifier of the video you want to add a thumbnail to, where you use a section of your video as the thumbnail.
-   * @param videoThumbnailPickPayload 
-   */
-  public async pickThumbnail(
-    videoId: string,
-    videoThumbnailPickPayload: VideoThumbnailPickPayload
-  ): Promise<Video> {
-    const queryParams: QueryOptions = {};
-    queryParams.headers = {};
-    if (videoId === null || videoId === undefined) {
-      throw new Error(
-        'Required parameter videoId was null or undefined when calling pickThumbnail.'
-      );
-    }
-    if (
-      videoThumbnailPickPayload === null ||
-      videoThumbnailPickPayload === undefined
-    ) {
-      throw new Error(
-        'Required parameter videoThumbnailPickPayload was null or undefined when calling pickThumbnail.'
-      );
-    }
-    // Path Params
-    const localVarPath = '/videos/{videoId}/thumbnail'
-      .substring(1)
-      .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
-
-    // Body Params
-    const contentType = ObjectSerializer.getPreferredMediaType([
-      'application/json',
-    ]);
-    queryParams.headers['Content-Type'] = contentType;
-
-    queryParams.body = ObjectSerializer.stringify(
-      ObjectSerializer.serialize(
-        videoThumbnailPickPayload,
-        'VideoThumbnailPickPayload',
-        ''
-      ),
-      contentType
-    );
-
-    queryParams.method = 'PATCH';
 
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'Video',
-            ''
-          ) as Video
+        (response) =>{
+        let result = ObjectSerializer.deserialize(
+          JSON.parse(response.body),
+          'HttpResponse',
+          ''
+        ) as HttpResponse
+
+        return result.message
+
+        // if (result.status == 'success'){
+        //   return ObjectSerializer.deserialize(
+        //     JSON.parse(JSON.stringify(result.data)),
+        //     'Video',
+        //     ''
+        //   ) as VideosListResponse
+        // }
+
+        // return undefined
+        }
       );
   }
 
-  /**
-   * This method provides upload status & encoding status to determine when the video is uploaded or ready to playback. Once encoding is completed, the response also lists the available stream qualities.
-   * Retrieve video status
-   * @param videoId The unique identifier for the video you want the status for.
-   */
-  public async getStatus(videoId: string): Promise<VideoStatus> {
-    const queryParams: QueryOptions = {};
-    queryParams.headers = {};
-    if (videoId === null || videoId === undefined) {
-      throw new Error(
-        'Required parameter videoId was null or undefined when calling getStatus.'
-      );
-    }
-    // Path Params
-    const localVarPath = '/videos/{videoId}/status'
-      .substring(1)
-      .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
+//   /**
+//    * This method provides upload status & encoding status to determine when the video is uploaded or ready to playback. Once encoding is completed, the response also lists the available stream qualities.
+//    * Retrieve video status
+//    * @param videoId The unique identifier for the video you want the status for.
+//    */
+//   public async getStatus(videoId: string): Promise<VideoStatus> {
+//     const queryParams: QueryOptions = {};
+//     queryParams.headers = {};
+//     if (videoId === null || videoId === undefined) {
+//       throw new Error(
+//         'Required parameter videoId was null or undefined when calling getStatus.'
+//       );
+//     }
+//     // Path Params
+//     const localVarPath = '/videos/{videoId}/status'
+//       .substring(1)
+//       .replace('{' + 'videoId' + '}', encodeURIComponent(String(videoId)));
 
-    queryParams.method = 'GET';
+//     queryParams.method = 'GET';
 
-    return this.httpClient
-      .call(localVarPath, queryParams)
-      .then(
-        (response) =>
-          ObjectSerializer.deserialize(
-            ObjectSerializer.parse(
-              response.body,
-              response.headers['content-type']
-            ),
-            'VideoStatus',
-            ''
-          ) as VideoStatus
-      );
-  }
+//     return this.httpClient
+//       .call(localVarPath, queryParams)
+//       .then(
+//         (response) =>
+//           ObjectSerializer.deserialize(
+//             ObjectSerializer.parse(
+//               response.body,
+//             ),
+//             'VideoStatus',
+//             ''
+//           ) as VideoStatus
+//       );
+//   }
 }

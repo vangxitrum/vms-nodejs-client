@@ -1,16 +1,4 @@
-/**
- * @api.video/nodejs-client
- * api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
- *
- * The version of the OpenAPI document: 1
- *
- *
- * NOTE: This class is auto generated.
- * Do not edit the class manually.
- */
-
 import AttributeType from './AttributeType.js';
-import VideoSourceLiveStream from './VideoSourceLiveStream.js';
 
 /**
  * Source information about the video.
@@ -21,7 +9,6 @@ export default class VideoSource {
    */
   'uri'?: string;
   'type'?: string;
-  'liveStream'?: VideoSourceLiveStream;
 
   static readonly discriminator?: string = undefined;
 
@@ -36,12 +23,6 @@ export default class VideoSource {
       name: 'type',
       baseName: 'type',
       type: 'string',
-      format: '',
-    },
-    {
-      name: 'liveStream',
-      baseName: 'liveStream',
-      type: 'VideoSourceLiveStream',
       format: '',
     },
   ];

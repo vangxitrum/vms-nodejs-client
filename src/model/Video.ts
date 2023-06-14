@@ -1,14 +1,3 @@
-/**
- * @api.video/nodejs-client
- * api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
- *
- * The version of the OpenAPI document: 1
- *
- *
- * NOTE: This class is auto generated.
- * Do not edit the class manually.
- */
-
 import AttributeType from './AttributeType.js';
 import Metadata from './Metadata.js';
 import VideoAssets from './VideoAssets.js';
@@ -18,11 +7,11 @@ export default class Video {
   /**
    * The unique identifier of the video object.
    */
-  'videoId': string;
+  'video_id': string;
   /**
    * When a video was created, presented in ISO-8601 format.
    */
-  'createdAt'?: Date;
+  'created_at'?: Date;
   /**
    * The title of the video content.
    */
@@ -32,17 +21,17 @@ export default class Video {
    */
   'description'?: string;
   /**
-   * The date and time the API created the video. Date and time are provided using ISO-8601 UTC format.
-   */
-  'publishedAt'?: Date;
-  /**
    * The date and time the video was updated. Date and time are provided using ISO-8601 UTC format.
    */
-  'updatedAt'?: Date;
+  'updated_at'?: Date;
   /**
    * One array of tags (each tag is a string) in order to categorize a video. Tags may include spaces.
    */
   'tags'?: Array<string>;
+  /**
+   * The date and time the video was published. Date and time are provided using ISO-8601 UTC format.
+   */
+  'published_at'?: Date;
   /**
    * Metadata you can use to categorise and filter videos. Metadata is a list of dictionaries, where each dictionary represents a key value pair for categorising a video. [Dynamic Metadata](https://api.video/blog/endpoints/dynamic-metadata) allows you to define a key that allows any value pair.
    */
@@ -50,13 +39,9 @@ export default class Video {
   'source'?: VideoSource;
   'assets'?: VideoAssets;
   /**
-   * The id of the player that will be applied on the video.
-   */
-  'playerId'?: string;
-  /**
    * Defines if the content is publicly reachable or if a unique token is needed for each play session. Default is true. Tutorials on [private videos](https://api.video/blog/endpoints/private-videos).
    */
-  '_public'?: boolean;
+  'public'?: boolean;
   /**
    * Defines if video is panoramic.
    */
@@ -64,20 +49,36 @@ export default class Video {
   /**
    * This lets you know whether mp4 is supported. If enabled, an mp4 URL will be provided in the response for the video.
    */
-  'mp4Support'?: boolean;
+  'mp4_support'?: boolean;
+  /**
+   * This lets you know your video's qualities
+   */
+  'qualities'?: Array<string>;
+  /**
+   * This lets you know your video's duration
+   */
+  'duration'?: number;
+  /**
+   * This lets you know your video's size
+   */
+  'size'?: number;
+  /**
+   * This lets you know your video's view
+   */
+  'view'?: number;
 
   static readonly discriminator?: string = undefined;
 
   static readonly attributeTypeMap: Array<AttributeType> = [
     {
-      name: 'videoId',
-      baseName: 'videoId',
+      name: 'video_id',
+      baseName: 'video_id',
       type: 'string',
       format: '',
     },
     {
-      name: 'createdAt',
-      baseName: 'createdAt',
+      name: 'created_at',
+      baseName: 'created_at',
       type: 'Date',
       format: 'date-time',
     },
@@ -94,14 +95,14 @@ export default class Video {
       format: '',
     },
     {
-      name: 'publishedAt',
-      baseName: 'publishedAt',
+      name: 'published_at',
+      baseName: 'published_at',
       type: 'Date',
       format: 'date-time',
     },
     {
-      name: 'updatedAt',
-      baseName: 'updatedAt',
+      name: 'updated_at',
+      baseName: 'updated_at',
       type: 'Date',
       format: 'date-time',
     },
@@ -109,6 +110,30 @@ export default class Video {
       name: 'tags',
       baseName: 'tags',
       type: 'Array<string>',
+      format: '',
+    },
+    {
+      name: 'qualities',
+      baseName: 'qualities',
+      type: 'Array<string>',
+      format: '',
+    },
+    {
+      name: 'duration',
+      baseName: 'duration',
+      type: 'number',
+      format: '',
+    },
+    {
+      name: 'size',
+      baseName: 'size',
+      type: 'number',
+      format: '',
+    },
+    {
+      name: 'view',
+      baseName: 'view',
+      type: 'number',
       format: '',
     },
     {
@@ -130,13 +155,7 @@ export default class Video {
       format: '',
     },
     {
-      name: 'playerId',
-      baseName: 'playerId',
-      type: 'string',
-      format: '',
-    },
-    {
-      name: '_public',
+      name: 'public',
       baseName: 'public',
       type: 'boolean',
       format: '',
@@ -148,8 +167,8 @@ export default class Video {
       format: '',
     },
     {
-      name: 'mp4Support',
-      baseName: 'mp4Support',
+      name: 'mp4_support',
+      baseName: 'mp4_support',
       type: 'boolean',
       format: '',
     },

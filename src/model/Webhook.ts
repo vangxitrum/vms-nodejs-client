@@ -1,25 +1,14 @@
-/**
- * @api.video/nodejs-client
- * api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
- *
- * The version of the OpenAPI document: 1
- *
- *
- * NOTE: This class is auto generated.
- * Do not edit the class manually.
- */
-
 import AttributeType from './AttributeType.js';
 
 export default class Webhook {
   /**
    * Unique identifier of the webhook
    */
-  'webhookId'?: string;
+  'webhook_id'?: string;
   /**
    * When an webhook was created, presented in ISO-8601 format.
    */
-  'createdAt'?: Date;
+  'created_at'?: Date;
   /**
    * A list of events that will trigger the webhook.
    */
@@ -33,14 +22,14 @@ export default class Webhook {
 
   static readonly attributeTypeMap: Array<AttributeType> = [
     {
-      name: 'webhookId',
-      baseName: 'webhookId',
+      name: 'webhook_id',
+      baseName: 'webhook_id',
       type: 'string',
       format: '',
     },
     {
-      name: 'createdAt',
-      baseName: 'createdAt',
+      name: 'created_at',
+      baseName: 'created_at',
       type: 'Date',
       format: 'date-time',
     },

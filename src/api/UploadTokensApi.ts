@@ -10,11 +10,12 @@
  */
 
 import { URLSearchParams } from 'url';
-import ObjectSerializer from '../ObjectSerializer.js';
-import HttpClient, { QueryOptions } from '../HttpClient.js';
-import TokenCreationPayload from '../model/TokenCreationPayload.js';
-import TokenListResponse from '../model/TokenListResponse.js';
-import UploadToken from '../model/UploadToken.js';
+import ObjectSerializer from '../ObjectSerializer';
+import HttpClient, { QueryOptions } from '../HttpClient';
+import TokenCreationPayload from '../model/TokenCreationPayload';
+import TokenListResponse from '../model/TokenListResponse';
+import UploadToken from '../model/UploadToken';
+import HttpResponse from 'model/HttpResponse';
 
 /**
  * no description
@@ -33,7 +34,7 @@ export default class UploadTokensApi {
    */
   public async createToken(
     tokenCreationPayload: TokenCreationPayload = {}
-  ): Promise<UploadToken> {
+  ): Promise<UploadToken | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (tokenCreationPayload === null || tokenCreationPayload === undefined) {
@@ -42,7 +43,7 @@ export default class UploadTokensApi {
       );
     }
     // Path Params
-    const localVarPath = '/upload-tokens'.substring(1);
+    const localVarPath = 'api/upload_tokens';
 
     // Body Params
     const contentType = ObjectSerializer.getPreferredMediaType([
@@ -50,29 +51,37 @@ export default class UploadTokensApi {
     ]);
     queryParams.headers['Content-Type'] = contentType;
 
-    queryParams.body = ObjectSerializer.stringify(
-      ObjectSerializer.serialize(
-        tokenCreationPayload,
-        'TokenCreationPayload',
-        ''
-      ),
-      contentType
-    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append("ttl", ObjectSerializer.serialize(tokenCreationPayload.ttl, 'number', 'int64'));
+
+    queryParams.searchParams = urlSearchParams; 
 
     queryParams.method = 'POST';
 
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
+        (response) =>{
+            let rs = ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
-              response.headers['content-type']
             ),
-            'UploadToken',
+            'HttpResponse',
             ''
-          ) as UploadToken
+          ) as HttpResponse
+
+          if (rs.status === "success") {
+            return ObjectSerializer.deserialize(
+              ObjectSerializer.parse(
+                rs.data,
+              ),
+              'UploadToken',
+              ''
+            ) as UploadToken
+          }
+          return undefined
+
+        }
       );
   }
 
@@ -81,7 +90,7 @@ export default class UploadTokensApi {
    * Retrieve upload token
    * @param uploadToken The unique identifier for the token you want information about.
    */
-  public async getToken(uploadToken: string): Promise<UploadToken> {
+  public async getToken(uploadToken: string): Promise<UploadToken | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (uploadToken === null || uploadToken === undefined) {
@@ -90,7 +99,7 @@ export default class UploadTokensApi {
       );
     }
     // Path Params
-    const localVarPath = '/upload-tokens/{uploadToken}'
+    const localVarPath = 'api/upload_tokens/{uploadToken}'
       .substring(1)
       .replace(
         '{' + 'uploadToken' + '}',
@@ -102,15 +111,27 @@ export default class UploadTokensApi {
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
+        (response) =>{
+            let rs = ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
-              response.headers['content-type']
             ),
-            'UploadToken',
+            'HttpResponse',
             ''
-          ) as UploadToken
+          ) as HttpResponse
+
+          if (rs.status === "success") {
+            return ObjectSerializer.deserialize(
+              ObjectSerializer.parse(
+                rs.data,
+              ),
+              'UploadToken',
+              ''
+            ) as UploadToken
+          }
+          return undefined
+
+        }
       );
   }
 
@@ -119,7 +140,7 @@ export default class UploadTokensApi {
    * Delete an upload token
    * @param uploadToken The unique identifier for the upload token you want to delete. Deleting a token will make it so the token can no longer be used for authentication.
    */
-  public async deleteToken(uploadToken: string): Promise<void> {
+  public async deleteToken(uploadToken: string): Promise<string | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     if (uploadToken === null || uploadToken === undefined) {
@@ -128,7 +149,7 @@ export default class UploadTokensApi {
       );
     }
     // Path Params
-    const localVarPath = '/upload-tokens/{uploadToken}'
+    const localVarPath = 'api/upload_tokens/{uploadToken}'
       .substring(1)
       .replace(
         '{' + 'uploadToken' + '}',
@@ -140,15 +161,17 @@ export default class UploadTokensApi {
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
+        (response) =>{
+            let rs = ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
-              response.headers['content-type']
             ),
-            'void',
+            'HttpResponse',
             ''
-          ) as void
+          ) as HttpResponse
+
+          return rs.message
+        }
       );
   }
 
@@ -158,50 +181,50 @@ export default class UploadTokensApi {
    * @param {Object} searchParams
    * @param { &#39;createdAt&#39; | &#39;ttl&#39; } searchParams.sortBy Allowed: createdAt, ttl. You can use these to sort by when a token was created, or how much longer the token will be active (ttl - time to live). Date and time is presented in ISO-8601 format.
    * @param { &#39;asc&#39; | &#39;desc&#39; } searchParams.sortOrder Allowed: asc, desc. Ascending is 0-9 or A-Z. Descending is 9-0 or Z-A.
-   * @param { number } searchParams.currentPage Choose the number of search results to return per page. Minimum value: 1
-   * @param { number } searchParams.pageSize Results per page. Allowed values 1-100, default is 25.
+   * @param { number } searchParams.limit Choose the number of search results to return per page. Minimum value: 1
+   * @param { number } searchParams.offset Results per page. Allowed values 1-100, default is 25.
    */
   public async list({
     sortBy,
     sortOrder,
-    currentPage,
-    pageSize,
+    limit,
+    offset,
   }: {
-    sortBy?: 'createdAt' | 'ttl';
+    sortBy?: 'created_at' | 'ttl';
     sortOrder?: 'asc' | 'desc';
-    currentPage?: number;
-    pageSize?: number;
-  } = {}): Promise<TokenListResponse> {
+    limit?: number;
+    offset?: number;
+  } = {}): Promise<TokenListResponse | undefined> {
     const queryParams: QueryOptions = {};
     queryParams.headers = {};
     // Path Params
-    const localVarPath = '/upload-tokens'.substring(1);
+    const localVarPath = 'api/upload_tokens'.substring(1);
 
     // Query Params
     const urlSearchParams = new URLSearchParams();
 
     if (sortBy !== undefined) {
       urlSearchParams.append(
-        'sortBy',
+        'sort_by',
         ObjectSerializer.serialize(sortBy, "'createdAt' | 'ttl'", '')
       );
     }
     if (sortOrder !== undefined) {
       urlSearchParams.append(
-        'sortOrder',
+        'order',
         ObjectSerializer.serialize(sortOrder, "'asc' | 'desc'", '')
       );
     }
-    if (currentPage !== undefined) {
+    if (limit !== undefined) {
       urlSearchParams.append(
-        'currentPage',
-        ObjectSerializer.serialize(currentPage, 'number', '')
+        'limit',
+        ObjectSerializer.serialize(limit, 'number', '')
       );
     }
-    if (pageSize !== undefined) {
+    if (offset !== undefined) {
       urlSearchParams.append(
-        'pageSize',
-        ObjectSerializer.serialize(pageSize, 'number', '')
+        'offset',
+        ObjectSerializer.serialize(offset, 'number', '')
       );
     }
 
@@ -209,18 +232,32 @@ export default class UploadTokensApi {
 
     queryParams.method = 'GET';
 
+
+
     return this.httpClient
       .call(localVarPath, queryParams)
       .then(
-        (response) =>
-          ObjectSerializer.deserialize(
+        (response) =>{
+            let rs = ObjectSerializer.deserialize(
             ObjectSerializer.parse(
               response.body,
-              response.headers['content-type']
             ),
-            'TokenListResponse',
+            'HttpResponse',
             ''
-          ) as TokenListResponse
+          ) as HttpResponse
+
+          if (rs.status === "success") {
+            return ObjectSerializer.deserialize(
+              ObjectSerializer.parse(
+                rs.data,
+              ),
+              'UploadToken',
+              ''
+            ) as TokenListResponse
+          }
+          return undefined
+
+        }
       );
   }
 }

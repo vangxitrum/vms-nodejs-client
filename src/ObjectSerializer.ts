@@ -1,60 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-non-null-assertion */
-/**
- * @api.video/nodejs-client
- * api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
- *
- * The version of the OpenAPI document: 1
- *
- *
- * NOTE: This class is auto generated.
- * Do not edit the class manually.
- */
-
-import AccessToken from './model/AccessToken.js';
-import AuthenticatePayload from './model/AuthenticatePayload.js';
-import BadRequest from './model/BadRequest.js';
-import BytesRange from './model/BytesRange.js';
-import LiveStreamSessionClient from './model/LiveStreamSessionClient.js';
-import LiveStreamSessionDevice from './model/LiveStreamSessionDevice.js';
-import LiveStreamSessionLocation from './model/LiveStreamSessionLocation.js';
-import LiveStreamSessionReferrer from './model/LiveStreamSessionReferrer.js';
-import Metadata from './model/Metadata.js';
-import NotFound from './model/NotFound.js';
-import Pagination from './model/Pagination.js';
-import PaginationLink from './model/PaginationLink.js';
-import Quality from './model/Quality.js';
-import RawStatisticsListLiveStreamAnalyticsResponse from './model/RawStatisticsListLiveStreamAnalyticsResponse.js';
-import RawStatisticsListPlayerSessionEventsResponse from './model/RawStatisticsListPlayerSessionEventsResponse.js';
-import RawStatisticsListSessionsResponse from './model/RawStatisticsListSessionsResponse.js';
-import RefreshTokenPayload from './model/RefreshTokenPayload.js';
-import TokenCreationPayload from './model/TokenCreationPayload.js';
-import TokenListResponse from './model/TokenListResponse.js';
-import UploadToken from './model/UploadToken.js';
-import Video from './model/Video.js';
-import VideoAssets from './model/VideoAssets.js';
-import VideoClip from './model/VideoClip.js';
-import VideoCreationPayload from './model/VideoCreationPayload.js';
-import VideoSession from './model/VideoSession.js';
-import VideoSessionClient from './model/VideoSessionClient.js';
-import VideoSessionDevice from './model/VideoSessionDevice.js';
-import VideoSessionLocation from './model/VideoSessionLocation.js';
-import VideoSessionOs from './model/VideoSessionOs.js';
-import VideoSessionReferrer from './model/VideoSessionReferrer.js';
-import VideoSessionSession from './model/VideoSessionSession.js';
-import VideoSource from './model/VideoSource.js';
-import VideoSourceLiveStream from './model/VideoSourceLiveStream.js';
-import VideoSourceLiveStreamLink from './model/VideoSourceLiveStreamLink.js';
-import VideoStatus from './model/VideoStatus.js';
-import VideoStatusEncoding from './model/VideoStatusEncoding.js';
-import VideoStatusEncodingMetadata from './model/VideoStatusEncodingMetadata.js';
-import VideoStatusIngest from './model/VideoStatusIngest.js';
-import VideoStatusIngestReceivedParts from './model/VideoStatusIngestReceivedParts.js';
-import VideoThumbnailPickPayload from './model/VideoThumbnailPickPayload.js';
-import VideoUpdatePayload from './model/VideoUpdatePayload.js';
-import VideosListResponse from './model/VideosListResponse.js';
-import Webhook from './model/Webhook.js';
-import WebhooksCreationPayload from './model/WebhooksCreationPayload.js';
-import WebhooksListResponse from './model/WebhooksListResponse.js';
+import AuthenticatePayload from './model/AuthenticatePayload';
+import BadRequest from './model/BadRequest';
+import BytesRange from './model/BytesRange';
+import Metadata from './model/Metadata';
+import NotFound from './model/NotFound';
+import TokenCreationPayload from './model/TokenCreationPayload';
+import TokenListResponse from './model/TokenListResponse';
+import UploadToken from './model/UploadToken';
+import Video from './model/Video';
+import VideoAssets from './model/VideoAssets';
+import VideoCreationPayload from './model/VideoCreationPayload';
+import VideoSource from './model/VideoSource';
+import VideoThumbnailPickPayload from './model/VideoThumbnailPickPayload';
+import VideoUpdatePayload from './model/VideoUpdatePayload';
+import VideosListResponse from './model/VideosListResponse';
+import Webhook from './model/Webhook';
+import WebhooksCreationPayload from './model/WebhooksCreationPayload';
+import WebhooksListResponse from './model/WebhooksListResponse';
+import HttpResponse  from './model/HttpResponse';
 
 /* tslint:disable:no-unused-variable */
 const primitives = [
@@ -81,53 +43,25 @@ const enumsMap: Set<string> = new Set<string>([
 ]);
 
 const typeMap: { [index: string]: any } = {
-  AccessToken: AccessToken,
   AuthenticatePayload: AuthenticatePayload,
   BadRequest: BadRequest,
   BytesRange: BytesRange,
-  LiveStreamSessionClient: LiveStreamSessionClient,
-  LiveStreamSessionDevice: LiveStreamSessionDevice,
-  LiveStreamSessionLocation: LiveStreamSessionLocation,
-  LiveStreamSessionReferrer: LiveStreamSessionReferrer,
   Metadata: Metadata,
   NotFound: NotFound,
-  Pagination: Pagination,
-  PaginationLink: PaginationLink,
-  Quality: Quality,
-  RawStatisticsListLiveStreamAnalyticsResponse:
-    RawStatisticsListLiveStreamAnalyticsResponse,
-  RawStatisticsListPlayerSessionEventsResponse:
-    RawStatisticsListPlayerSessionEventsResponse,
-  RawStatisticsListSessionsResponse: RawStatisticsListSessionsResponse,
-  RefreshTokenPayload: RefreshTokenPayload,
   TokenCreationPayload: TokenCreationPayload,
   TokenListResponse: TokenListResponse,
   UploadToken: UploadToken,
   Video: Video,
   VideoAssets: VideoAssets,
-  VideoClip: VideoClip,
   VideoCreationPayload: VideoCreationPayload,
-  VideoSession: VideoSession,
-  VideoSessionClient: VideoSessionClient,
-  VideoSessionDevice: VideoSessionDevice,
-  VideoSessionLocation: VideoSessionLocation,
-  VideoSessionOs: VideoSessionOs,
-  VideoSessionReferrer: VideoSessionReferrer,
-  VideoSessionSession: VideoSessionSession,
   VideoSource: VideoSource,
-  VideoSourceLiveStream: VideoSourceLiveStream,
-  VideoSourceLiveStreamLink: VideoSourceLiveStreamLink,
-  VideoStatus: VideoStatus,
-  VideoStatusEncoding: VideoStatusEncoding,
-  VideoStatusEncodingMetadata: VideoStatusEncodingMetadata,
-  VideoStatusIngest: VideoStatusIngest,
-  VideoStatusIngestReceivedParts: VideoStatusIngestReceivedParts,
   VideoThumbnailPickPayload: VideoThumbnailPickPayload,
   VideoUpdatePayload: VideoUpdatePayload,
   VideosListResponse: VideosListResponse,
   Webhook: Webhook,
   WebhooksCreationPayload: WebhooksCreationPayload,
   WebhooksListResponse: WebhooksListResponse,
+  HttpResponse: HttpResponse,
 };
 
 export default class ObjectSerializer {
@@ -200,36 +134,10 @@ export default class ObjectSerializer {
   }
 
   public static deserialize(data: any, type: string, format: string): any {
-    // polymorphism may change the actual type.
-    type = ObjectSerializer.findCorrectType(data, type);
-    if (data == undefined) {
-      return data;
-    } else if (primitives.indexOf(type.toLowerCase()) !== -1) {
-      return data;
-    } else if (type.lastIndexOf('Array<', 0) === 0) {
-      // string.startsWith pre es6
-      let subType: string = type.replace('Array<', ''); // Array<Type> => Type>
-      subType = subType.substring(0, subType.length - 1); // Type> => Type
-      const transformedData: any[] = [];
-      for (const index in data) {
-        const date = data[index];
-        transformedData.push(
-          ObjectSerializer.deserialize(date, subType, format)
-        );
-      }
-      return transformedData;
-    } else if (type === 'Date') {
-      return new Date(data);
-    } else {
-      if (enumsMap.has(type)) {
-        // is Enum
-        return data;
-      }
-
       if (!typeMap[type]) {
-        // dont know the type
-        return data;
+        return data
       }
+      
       const instance = new typeMap[type]();
       const attributeTypes = typeMap[type].getAttributeTypeMap();
       for (const index in attributeTypes) {
@@ -241,7 +149,6 @@ export default class ObjectSerializer {
         );
       }
       return instance;
-    }
   }
 
   /**
@@ -315,27 +222,29 @@ export default class ObjectSerializer {
   /**
    * Parse data from a string according to the given media type
    */
-  public static parse(rawData: string, mediaType: string | undefined): any {
-    if (mediaType === undefined) {
-      // HTTP DELETE response.
-      if (rawData === '') {
-        return rawData;
-      }
+  public static parse(rawData: string): any {
+    return JSON.parse(rawData);
+  //   if (mediaType === undefined) { 
+  //     // HTTP DELETE response.
+  //     if (rawData === '') {
+  //       return rawData;
+  //     }
 
-      throw new Error('Cannot parse content. No Content-Type defined.');
-    }
+  //     throw new Error('Cannot parse content. No Content-Type defined.');
+  //   }
 
-    if (
-      mediaType === 'application/json' ||
-      mediaType.indexOf('application/vnd.api.video+json;version=') === 0
-    ) {
-      return JSON.parse(rawData);
-    }
+  //   if (
+  //     mediaType === 'application/json' ||
+  //     mediaType.indexOf('application/vnd.api.video+json;version=') === 0
+  //   ) {
+  //     return JSON.parse(rawData);
+  //   }
 
-    throw new Error(
-      'The mediaType ' +
-        mediaType +
-        ' is not supported by ObjectSerializer.parse.'
-    );
+  //   throw new Error(
+  //     'The mediaType ' +
+  //       mediaType +
+  //       ' is not supported by ObjectSerializer.parse.'
+  //   );
+  // }
   }
 }
